@@ -131,15 +131,37 @@ function getReply(text) {
   return "I'm still a beginner chatbot, so I don't know how to answer that yet. In a future version, we can try adding a real AI model that runs on your device.";
 }
 
-function sendMessage() {
+async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
   addMessage("You: " + text, "user");
   input.value = "";
-  const reply = getReply(text);
-  setTimeout(() => addMessage("Echo AI: " + reply, "bot"), 250);
   input.focus();
+
+  const loading = addMessage("Echo AI: Thinking...", "bot");
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await response.json();
+    loading.remove();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Something went wrong.");
+    }
+
+    addMessage("Echo AI: " + data.reply, "bot");
+  } catch (error) {
+    loading.remove();
+    addMessage("Echo AI: " + error.message, "bot");
+  }
 }
 
 document.getElementById("send").addEventListener("click", sendMessage);
