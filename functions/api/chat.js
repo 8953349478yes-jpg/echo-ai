@@ -35,7 +35,7 @@ const result = await context.env.AI.run(
 );
 
 return Response.json({ reply: result.response });
-```
+
 
 } catch (error) {
 return Response.json(
