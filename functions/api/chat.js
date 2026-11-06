@@ -3,7 +3,7 @@ try {
 const body = await context.request.json();
 const message = body.message;
 
-```
+
 if (typeof message !== "string" || !message.trim()) {
   return Response.json(
     { error: "Please enter a message." },
